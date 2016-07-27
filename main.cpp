@@ -12,17 +12,24 @@
 //See the License for the specific language governing permissions and
 //limitations under the License.
 //This is preliminary software and/or hardware and APIs are preliminary and subject to change.
-#include "Kinect2Grabber.hpp"
+#include "k2g.h"
+#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 {
   if(argc < 2){
-    std::cout << "insert number of images to capture and rgb size and depth size (ex: 16 512 424 1920 1080)" <<std::endl;
+    std::cout << "insert number of images to capture and kinect processor" <<std::endl;
     exit(0);
   }
 
-  Kinect2Grabber::Kinect2Grabber<pcl::PointXYZRGB> k2g("../calibration/rgb_calibration.yaml", "../calibration/depth_calibration.yaml", "../calibration/pose_calibration.yaml");
-  
+  Processor freenectprocessor = OPENGL;
+
+  if(argc > 2){
+      freenectprocessor = static_cast<Processor>(atoi(argv[2]));
+  }
+
+  K2G k2g(freenectprocessor);
+
   cv::Size boardSize(6,9);
   int count = 0;
   int counter = 0;
@@ -46,16 +53,12 @@ int main(int argc, char *argv[])
   while(true)
   {
     
-    libfreenect2::FrameMap * frames = k2g.getRawFrames();
-    libfreenect2::Frame *rgb = (*frames)[libfreenect2::Frame::Color];
-    libfreenect2::Frame *ir = (*frames)[libfreenect2::Frame::Ir];
-    libfreenect2::Frame *depth = (*frames)[libfreenect2::Frame::Depth];
-
     cv::Mat ir_gray, ir_scaled, rgb_gray, rgb_scaled;
 
-    cv::Mat rgb_image = cv::Mat(rgb->height, rgb->width, CV_8UC3, rgb->data);
-    cv::Mat ir_image = cv::Mat(ir->height, ir->width, CV_32FC1, ir->data);
-    cv::Mat depth_image = cv::Mat(depth->height, depth->width, CV_32FC1, depth->data);
+    cv::Mat rgb_image, ir_image, depth_image;
+    std::cout << "getting color and depth and ir " << std::endl;
+    k2g.get(rgb_image, depth_image, ir_image);
+    std::cout << "got images" << std::endl;
     //cv::resize(rgb_image, rgb_scaled, cv::Size(atoi(argv[1]), atoi(argv[2])), cv::INTER_CUBIC);
 
     cv::cvtColor(rgb_image, rgb_gray, 7); // rgb2gray

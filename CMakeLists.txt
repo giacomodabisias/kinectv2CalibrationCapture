@@ -1,35 +1,18 @@
 cmake_minimum_required(VERSION 2.8)
-Project (calibration_image_grabber CXX)
+Project(calibration_image_grabber CXX)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
-set(CMAKE_CXX_FLAHS "${CMAKE_CXX_FLAGS} -march=native")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11") 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -march=native")
 set(CMAKE_BUILD_TYPE Release) 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules")
 
-find_package(OpenMP)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
+find_package(Boost REQUIRED)
+set(BOOST_LIBS boost_system boost_filesystem)
 
-
-find_package( OpenCV REQUIRED )
-
-find_package(PCL 1.7 REQUIRED)
-include_directories(${PCL_INCLUDE_DIRS})
-link_directories(${PCL_LIBRARY_DIRS})
-add_definitions(${PCL_DEFINITIONS})
-
-include_directories(${CUDA_INCLUDE_DIRS})
-include_directories(${OpenCV_INCLUDE_DIRS} )
-include_directories(${GLEW_INCLUDE_DIRS})
-include_directories(${GLEWF_INCLUDE_DIRS})
-include_directories(${KINECT2GRABBER})
-
-
-add_definitions(-DGLEW_MX -DGLEW_STATIC)
+find_package(OpenCV     REQUIRED)
+find_package(Freenect2  REQUIRED)
 
 add_executable(calibration_image_grabber main.cpp )
 
-target_link_libraries(calibration_image_grabber ${CUDA_LIBRARIES} ${OpenCV_LIBS} ${LIBFREENECT2_LIB} ${GLEW_LIB} ${GLFW_LIB} ${PCL_LIBRARIES})
+target_link_libraries(calibration_image_grabber ${FREENECT2_LIBRARY} ${OpenCV_LIBS} ${BOOST_LIBS})
 
-#example : cmake .. -DGLEW_LIB=/home/gf/Libraries/libfreenect2/depends/glew/lib64/libGLEW.so -DGLFW_LIB=/home/gf/Libraries/libfreenect2/examples/protonect/lib/libglfw.so.3.0 -DGLEW_INCLUDE_DIRS=/home/gf/Libraries/libfreenect2/depends/glew/include -DGLEWF_INCLUDE_DIRS=/home/gf/Libraries/libfreenect2/depends/glfw/include -DLIBFREENECT2_LIB=/home/gf/Libraries/libfreenect2/examples/protonect/lib/libfreenect2.so -DKINECT2GRABBER=/home/gf/Projects/pcl/pcl_kinect2_grabber
