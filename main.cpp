@@ -56,9 +56,7 @@ int main(int argc, char *argv[])
     cv::Mat ir_gray, ir_scaled, rgb_gray, rgb_scaled;
 
     cv::Mat rgb_image, ir_image, depth_image;
-    std::cout << "getting color and depth and ir " << std::endl;
     k2g.get(rgb_image, depth_image, ir_image);
-    std::cout << "got images" << std::endl;
     //cv::resize(rgb_image, rgb_scaled, cv::Size(atoi(argv[1]), atoi(argv[2])), cv::INTER_CUBIC);
 
     cv::cvtColor(rgb_image, rgb_gray, 7); // rgb2gray
